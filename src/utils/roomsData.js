@@ -16,5 +16,11 @@ export const joinPlayerToRoom = (playerData, code) => {
   
   if (!room) return false;
 
-  return room.players.push(playerData) - 1;
+  const playerIndex = room.players.push(playerData) - 1;
+
+  return {room: room, player: room.players[playerIndex]};
+}
+
+export const wsSendToAllInRoom = (romIndex) => {
+
 }
