@@ -1,32 +1,23 @@
-import { joinPlayerToRoom, removePlayer, removeRoom, rooms } from "../utils/roomsData.js";
-import { makeRandomString } from "../utils/utils.js"
+import { createRoom, joinPlayerToRoom } from "../utils/roomsData.js";
+import { makeRandomString } from "../utils/utils.js";
 
 export const createRoomService = ws => {
-
+  
   const roomCode = makeRandomString(4);
 
-  const roomIndex = rooms.push({
-    roomCode: roomCode,
-    players: []
-  }) - 1;
+  const joinData = createRoom({ name: "pepik", ws: ws }, roomCode);
 
-  rooms[roomIndex].players.push({ name: "pepik", ws: ws });
+  const status = joinData == false ? 400 : 200; 
 
-  console.log(rooms);
+  ws.send(JSON.stringify({status: status, data: roomCode}))
 
-  ws.send(JSON.stringify({status: 200, data: roomCode}))
-
-  const room = rooms[roomIndex]
-  const player = room.players[0]; //there is always only 1 player at start
-
-  return {room: room, player: player};
+  return joinData;
 }
 
 export const joinRoomService = (ws, code) => {
 
   const joinData = joinPlayerToRoom({ name: "pepik", ws: ws }, code);
 
-  console.log(rooms);
 
   const status = joinData == false ? 400 : 200; 
 

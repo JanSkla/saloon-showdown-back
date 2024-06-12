@@ -11,6 +11,21 @@ export const removePlayer = (roomIndex, playerIndex) => {
   }
 }
 
+export const createRoom = (playerData, roomCode) => {
+
+  const roomIndex = rooms.push({
+    roomCode: roomCode,
+    players: []
+  }) - 1;
+
+  rooms[roomIndex].players.push(playerData);
+
+  const room = rooms[roomIndex]
+  const player = room.players[0]; //there is always only 1 player at start
+
+  return {room: room, player: player};
+}
+
 export const joinPlayerToRoom = (playerData, code) => {
   const room = rooms.find(room => room.roomCode == code); 
   

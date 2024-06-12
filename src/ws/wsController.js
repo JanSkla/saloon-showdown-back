@@ -58,6 +58,7 @@ const startWs = () => {
         console.log("has a room")
         switch (data.type){
           case "start-game":
+            
             break;
         default:
           ws.close();
