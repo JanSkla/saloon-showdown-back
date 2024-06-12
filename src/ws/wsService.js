@@ -16,11 +16,7 @@ export const createRoomService = ws => {
 
   ws.send(JSON.stringify({status: 200, data: roomCode}))
 
-  
-  ws.on('close', () => {
-    console.log('closed');
-    removePlayer(roomIndex, playerIndex);
-  });
+  return rooms[roomIndex];
 }
 
 export const joinRoomService = (ws, code) => {
@@ -33,8 +29,5 @@ export const joinRoomService = (ws, code) => {
 
   ws.send(JSON.stringify({status: status}))
 
-  ws.on('close', () => {
-    console.log('closed');
-    removePlayer(roomIndex, playerIndex);
-  });
+  return { room: rooms[roomIndex], player: rooms[roomIndex].players[playerIndex] };
 }
