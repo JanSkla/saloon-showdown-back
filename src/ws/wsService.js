@@ -8,26 +8,29 @@ export const createRoomService = ws => {
   const roomIndex = rooms.push({
     roomCode: roomCode,
     players: []
-  }) - 1
+  }) - 1;
 
-  const playerIndex = rooms[roomIndex].players.push({ name: "pepik", ws: ws }) - 1
+  rooms[roomIndex].players.push({ name: "pepik", ws: ws });
 
   console.log(rooms);
 
   ws.send(JSON.stringify({status: 200, data: roomCode}))
 
-  return rooms[roomIndex];
+  const room = rooms[roomIndex]
+  const player = room.players[0]; //there is always only 1 player at start
+
+  return {room: room, player: player};
 }
 
 export const joinRoomService = (ws, code) => {
 
-  const playerIndex = joinPlayerToRoom({ name: "pepik", ws: ws }, code);
+  const joinData = joinPlayerToRoom({ name: "pepik", ws: ws }, code);
 
   console.log(rooms);
 
-  const status = playerIndex == false ? 400 : 200; 
+  const status = joinData == false ? 400 : 200; 
 
   ws.send(JSON.stringify({status: status}))
 
-  return { room: rooms[roomIndex], player: rooms[roomIndex].players[playerIndex] };
+  return joinData;
 }

@@ -28,8 +28,9 @@ const startWs = () => {
       if(!room || !player){
         switch (data.type){
           case "create-room":
-            room = createRoomService(ws);
-            player = room.players[0]; //there is always only 1 player at start
+            const joinData = createRoomService(ws);
+            room = joinData.room;
+            player = joinData.player;
             break;
             
           case "join-room":
@@ -56,9 +57,8 @@ const startWs = () => {
       } else {
         console.log("has a room")
         switch (data.type){
-        // case "some-call-name":
-        //   content
-        //   break;
+          case "start-game":
+            break;
         default:
           ws.close();
           break;
