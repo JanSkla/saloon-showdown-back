@@ -1,5 +1,6 @@
+import { startGame } from "../utils/game.js";
 import { createRoom, joinPlayerToRoom } from "../utils/roomsData.js";
-import { makeRandomString } from "../utils/utils.js";
+import { makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = ws => {
   
@@ -24,4 +25,15 @@ export const joinRoomService = (ws, code) => {
   ws.send(JSON.stringify({status: status}))
 
   return joinData;
+}
+
+export const startGameService = (room) => {
+  room.state = "loading";
+
+  sendToAllInRoom(room, "Game starts in 3 seconds");
+
+  setTimeout(() => {
+    sendToAllInRoom(room, "START");
+    startGame(room);
+  }, 3000);
 }

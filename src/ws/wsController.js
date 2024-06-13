@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, joinRoomService } from "./wsService.js";
+import { createRoomService, joinRoomService, startGameService } from "./wsService.js";
 import { joinRoomValidateData } from "../validations/wsValidations.js";
 import { removePlayer, rooms } from "../utils/roomsData.js";
 
@@ -25,7 +25,7 @@ const startWs = () => {
 
       if(!data.type) { ws.close(); return; };
 
-      if(!room || !player){
+      if(!room){
         switch (data.type){
           case "create-room":
             const joinData = createRoomService(ws);
@@ -54,16 +54,22 @@ const startWs = () => {
           }
         });
 
-      } else {
+      } else if (room.state == "lobby") {
         console.log("has a room")
         switch (data.type){
           case "start-game":
-            
+            if(room.leadPlayer == player){
+              startGameService(room);
+            }
             break;
         default:
           ws.close();
           break;
       }
+      } else if (room.state == "game") {
+      }
+      else {
+        ws.close();
       }
     });
   });

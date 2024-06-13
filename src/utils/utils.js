@@ -9,3 +9,9 @@ export const makeRandomString = (length)  => {
   }
   return result;
 }
+
+export const sendToAllInRoom = (room, value) => {
+  room.players.forEach(element => {
+    element.ws.send(value);
+  });
+}
