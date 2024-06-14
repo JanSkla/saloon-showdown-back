@@ -1,7 +1,8 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, joinRoomService } from "./wsService.js";
-import { joinRoomValidateData } from "../validations/wsValidations.js";
+import { createRoomService, joinRoomService, startGameService } from "./wsService.js";
+import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsValidations.js";
 import { removePlayer, rooms } from "../utils/roomsData.js";
+import { handlePlayerChoice } from "../utils/game.js";
 
 const wss = new WebSocketServer({port: 8080});
 
@@ -25,7 +26,7 @@ const startWs = () => {
 
       if(!data.type) { ws.close(); return; };
 
-      if(!room || !player){
+      if(!room){
         switch (data.type){
           case "create-room":
             const joinData = createRoomService(ws);
@@ -34,13 +35,12 @@ const startWs = () => {
             break;
             
           case "join-room":
-            if(!joinRoomValidateData(data)) ws.close();
-            else {
+            if(joinRoomValidateData(data)){
               const joinData = joinRoomService(ws, data.code);
               room = joinData.room;
               player = joinData.player;
+              break;
             }
-            break;
   
           default:
             ws.close();
@@ -54,15 +54,42 @@ const startWs = () => {
           }
         });
 
-      } else {
+      } else if (room.state == "lobby") {
         console.log("has a room")
         switch (data.type){
           case "start-game":
+            if(room.leadPlayer == player){
+              startGameService(room);
+            }
             break;
         default:
           ws.close();
           break;
       }
+      } else if (room.state == "game") {
+        
+        switch (data.type){
+          case "choose-card":
+            switch (room.gameData.state){
+              case "choose":
+              case "gathering":
+                if (chooseCardValidateData(data)) {
+                  handlePlayerChoice(room, player, data);
+                  break;
+                }
+                console.log(chooseCardValidateData(data), "aaaa")
+            default:
+              ws.close();
+              break;
+            }
+            break;
+        default:
+          ws.close();
+          break;
+        }
+      }
+      else {
+        ws.close();
       }
     });
   });
