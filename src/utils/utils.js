@@ -11,7 +11,11 @@ export const makeRandomString = (length)  => {
 }
 
 export const sendToAllInRoom = (room, value) => {
-  room.players.forEach(element => {
-    element.ws.send(value);
+  room.players.forEach(player => {
+    player.ws.send(value);
   });
+}
+
+export const getPlayerByPIdAndRoom = (room, pId) => {
+  return room.players.find(player => player.pId == pId);
 }
