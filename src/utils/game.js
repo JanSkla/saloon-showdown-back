@@ -74,9 +74,9 @@ const processEvent = (room ) => {
 }
 
 export const handlePlayerChoice = (room, player, data) => {
-  const choice = { type: data.choice }
+  const choiceData = { type: data.choice }
 
-  if(choice.type == "shoot") choice.target = data.target;
+  if(choiceData.type == "shoot") choiceData.target = data.target;
 
   const playerData = room.gameData.playerData.find(data => data.pId == player.pId)
   playerData.choice = choiceData;

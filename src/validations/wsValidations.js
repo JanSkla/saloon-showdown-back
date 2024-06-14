@@ -8,11 +8,11 @@ export const chooseCardValidateData = (data) => {
 
   switch (data.choice) {
     case "ammo":
-    case "shoot":
-      if(!data.target) return false;
     case "block":
     case "beer":
       return true;
+    case "shoot":
+      return !!data.target;
     default:
       return false;
   }
