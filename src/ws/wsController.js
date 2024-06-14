@@ -77,7 +77,6 @@ const startWs = () => {
                   handlePlayerChoice(room, player, data);
                   break;
                 }
-                console.log(chooseCardValidateData(data), "aaaa")
             default:
               ws.close();
               break;
