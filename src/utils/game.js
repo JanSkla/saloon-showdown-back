@@ -28,7 +28,8 @@ const getOptions = (playerData) => {
 
   if(playerData.ammo > 0) options.push("shoot");
 
-  if(playerData.beer == false || playerData.beer == "ready") options.push("beer");
+  if(playerData.beer == false) options.push("order-beer");
+  if(playerData.beer == "ready") options.push("drink-beer");
 
   return options;
 }
@@ -37,21 +38,24 @@ const processChoices = (room) => {
 
   const roundSummary = [];
 
+  const beerDrinkers = [];
+
   room.gameData.playerData.forEach(data =>{
+
+    let tempBeerState = data.beer;
+
+
+    if(data.beer == "waiting"){
+      tempBeerState = "ready";
+      roundSummary.push(data.pId + "recieved a beer")
+    }
+    
     if(data.choice.type == undefined){
       //TODO: do smthing on no call
     }
     else{
       if (!data.options.find(option => option == data.choice.type)) console.log("wrong call") //TODO: do smthing on wrong call
       else{
-
-        let tempBeerState;
-
-
-        if(data.beer == "waiting"){
-          tempBeerState = "ready";
-          roundSummary.push(data.pId + "recieved a beer")
-        }
 
         switch (data.choice.type){
           case "ammo":
@@ -90,22 +94,34 @@ const processChoices = (room) => {
 
             roundSummary.push(data.pId + "is blocking")
             break;
-          case "beer":
+          case "order-beer":
             if(data.beer == false){
               tempBeerState = "waiting";
               roundSummary.push(data.pId + "ordered a beer")
             }
-            else if(data.beer == "ready"){
+            break;
+          case "drink-beer":
+            if(data.beer == "ready"){
               tempBeerState = false; //need to resolve shoot first drink later
-              data.health += 1;
-              roundSummary.push(data.pId + "used a beer")
+              beerDrinkers.push(data);
             }
             break;
         }
-        data.beer = tempBeerState;
       }
     }
+
+    data.beer = tempBeerState;
   });
+
+  beerDrinkers.forEach(chronicDrinker => {
+    if (chronicDrinker.health > 0 ) {
+      chronicDrinker.health += 1;
+      roundSummary.push(chronicDrinker.pId + "used a beer")
+    }
+  })
+
+  console.log("gameData", room.gameData);
+
   return roundSummary;
 }
 
