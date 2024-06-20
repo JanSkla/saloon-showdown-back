@@ -13,7 +13,9 @@ export const startGame = (room) => {
       pId: player.pId,
       options: [],
       choice: { type: undefined },
-      ammo: 0
+      ammo: 0,
+      health: 3,
+      beer: false
     })
   });
 
@@ -22,11 +24,105 @@ export const startGame = (room) => {
 
 const getOptions = (playerData) => {
 
-  const options = ["block", "beer", "ammo"];
+  const options = ["block", "ammo"];
 
   if(playerData.ammo > 0) options.push("shoot");
 
+  if(playerData.beer == false) options.push("order-beer");
+  if(playerData.beer == "ready") options.push("drink-beer");
+
   return options;
+}
+
+const processChoices = (room) => {
+
+  const roundSummary = [];
+
+  const beerDrinkers = [];
+
+  room.gameData.playerData.forEach(data =>{
+
+    let tempBeerState = data.beer;
+
+
+    if(data.beer == "waiting"){
+      tempBeerState = "ready";
+      roundSummary.push(data.pId + "recieved a beer")
+    }
+    
+    if(data.choice.type == undefined){
+      //TODO: do smthing on no call
+    }
+    else{
+      if (!data.options.find(option => option == data.choice.type)) console.log("wrong call") //TODO: do smthing on wrong call
+      else{
+
+        switch (data.choice.type){
+          case "ammo":
+            data.ammo++;
+
+            roundSummary.push(data.pId + "added ammo")
+            break;
+          case "shoot":
+            const targetPlayerData = room.gameData.playerData.find(pData=> pData.pId == data.choice.target);
+            if (!targetPlayerData){
+              console.log("target player does not exist");
+              break;
+            }
+            data.ammo -= 1;
+            if(targetPlayerData.choice.type != "block"){
+              targetPlayerData.health -= 1;
+              if (targetPlayerData.health < 1){
+                const i = room.gameData.playerData.indexOf(targetPlayerData);
+                roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " target died");
+
+                console.log("player " + targetPlayerData.pId + " died");
+                room.gameData.playerData.splice(i, 1);
+              }
+              else{
+                if(targetPlayerData.beer){
+                  targetPlayerData.beer = false;
+                  roundSummary.push(data.pId + "destroyed " + targetPlayerData.pId + "'s beer");
+                }
+                roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " target damaged");
+              }
+            }
+            else
+              roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " shot was blocked");
+            break;
+          case "block":
+
+            roundSummary.push(data.pId + "is blocking")
+            break;
+          case "order-beer":
+            if(data.beer == false){
+              tempBeerState = "waiting";
+              roundSummary.push(data.pId + "ordered a beer")
+            }
+            break;
+          case "drink-beer":
+            if(data.beer == "ready"){
+              tempBeerState = false; //need to resolve shoot first drink later
+              beerDrinkers.push(data);
+            }
+            break;
+        }
+      }
+    }
+
+    data.beer = tempBeerState;
+  });
+
+  beerDrinkers.forEach(chronicDrinker => {
+    if (chronicDrinker.health > 0 ) {
+      chronicDrinker.health += 1;
+      roundSummary.push(chronicDrinker.pId + "used a beer")
+    }
+  })
+
+  console.log("gameData", room.gameData);
+
+  return roundSummary;
 }
 
 const chooseEvent = (room) => {
@@ -38,6 +134,10 @@ const chooseEvent = (room) => {
     
     const player = getPlayerByPIdAndRoom(room, playerData.pId);
 
+    if (!player){
+      console.log("playerDoesNotExist")
+      return;
+    }
 
 
     playerData.options = getOptions(playerData),
@@ -62,13 +162,17 @@ const gatherEvent = (room) => {
   setTimeout(() => processEvent(room), GATHER_TIME);
 }
 
-const processEvent = (room ) => {
+const processEvent = (room) => {
   room.gameData.state = "processing";
 
   console.log(room.gameData.state)
   console.log(room.gameData.playerData)
   
   sendToAllInRoom(room, "processing choices");
+
+  const roundSummary = processChoices(room);
+
+  sendToAllInRoom(room, JSON.stringify(roundSummary))
 
   setTimeout(() => chooseEvent(room), PROCESS_TIME);
 }
@@ -79,5 +183,9 @@ export const handlePlayerChoice = (room, player, data) => {
   if(choiceData.type == "shoot") choiceData.target = data.target;
 
   const playerData = room.gameData.playerData.find(data => data.pId == player.pId)
+  if(!playerData){
+    console.log("playerData was not found");
+    return;
+  }
   playerData.choice = choiceData;
 }

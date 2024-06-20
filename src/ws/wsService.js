@@ -10,7 +10,7 @@ export const createRoomService = ws => {
 
   const status = joinData == false ? 400 : 200; 
 
-  ws.send(JSON.stringify({status: status, data: roomCode}))
+  ws.send(JSON.stringify({status: status, code: roomCode, pId: joinData.player.pId}));
 
   return joinData;
 }
@@ -20,9 +20,9 @@ export const joinRoomService = (ws, code) => {
   const joinData = joinPlayerToRoom({ name: "pepik", ws: ws }, code);
 
 
-  const status = joinData == false ? 400 : 200; 
+  const response = !!joinData ? {status: 200, pId: joinData.player.pId} : {status: 400};
 
-  ws.send(JSON.stringify({status: status}))
+  ws.send(JSON.stringify(response));
 
   return joinData;
 }
