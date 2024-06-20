@@ -1,1 +1,2 @@
 beer = false | "waiting" | "ready"
+choose cards = "ammo" | "block" | "shoot" | "order-beer" | "drink-beer"
