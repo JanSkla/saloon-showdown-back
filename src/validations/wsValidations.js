@@ -9,7 +9,8 @@ export const chooseCardValidateData = (data) => {
   switch (data.choice) {
     case "ammo":
     case "block":
-    case "beer":
+    case "order-beer":
+    case "drink-beer":
       return true;
     case "shoot":
       return !!data.target;
