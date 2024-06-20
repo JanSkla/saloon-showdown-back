@@ -76,6 +76,10 @@ const processChoices = (room) => {
                 room.gameData.playerData.splice(i, 1);
               }
               else{
+                if(targetPlayerData.beer){
+                  targetPlayerData.beer = false;
+                  roundSummary.push(data.pId + "destroyed " + targetPlayerData.pId + "'s beer");
+                }
                 roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " target damaged");
               }
             }
@@ -92,7 +96,7 @@ const processChoices = (room) => {
               roundSummary.push(data.pId + "ordered a beer")
             }
             else if(data.beer == "ready"){
-              tempBeerState = false;
+              tempBeerState = false; //need to resolve shoot first drink later
               data.health += 1;
               roundSummary.push(data.pId + "used a beer")
             }
