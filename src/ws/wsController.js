@@ -54,7 +54,7 @@ const startWs = () => {
           }
         });
 
-      } else if (room.state == "lobby") {
+      } else if (room.state == "lobby" || room.state == "game-over") {
         console.log("has a room")
         switch (data.type){
           case "start-game":

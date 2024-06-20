@@ -172,7 +172,14 @@ const processEvent = (room) => {
 
   const roundSummary = processChoices(room);
 
-  sendToAllInRoom(room, JSON.stringify(roundSummary))
+  sendToAllInRoom(room, JSON.stringify(roundSummary));
+
+  if (room.gameData.playerData.length == 1){
+    const winner = room.gameData.playerData[0];
+    room.state = "game-over";
+    sendToAllInRoom(room, "game is over, the winner is: " + winner.pId);
+    return;
+  }
 
   setTimeout(() => chooseEvent(room), PROCESS_TIME);
 }

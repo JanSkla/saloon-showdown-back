@@ -1,2 +1,3 @@
 beer = false | "waiting" | "ready"
 choose cards = "ammo" | "block" | "shoot" | "order-beer" | "drink-beer"
+room.state = "lobby" | "game" | "loading" | "game-over"
