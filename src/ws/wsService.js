@@ -1,5 +1,5 @@
 import { startGame } from "../utils/game.js";
-import { createRoom, joinPlayerToRoom } from "../utils/roomsData.js";
+import { createRoom, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
 import { makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = ws => {
@@ -17,7 +17,14 @@ export const createRoomService = ws => {
 
 export const joinRoomService = (ws, code) => {
 
-  const joinData = joinPlayerToRoom({ name: "pepik", ws: ws }, code);
+  const room = getRoomByCode(code);
+
+  if (room.state != "lobby" || room.state != "game-over"){
+    ws.send("cannot join a game that is running");
+    ws.close();
+  }
+
+  const joinData = joinPlayerToRoom(room, { name: "pepik", ws: ws });
 
 
   const response = !!joinData ? {status: 200, pId: joinData.player.pId} : {status: 400};

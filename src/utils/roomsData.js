@@ -41,10 +41,13 @@ export const createRoom = (playerData, roomCode) => {
   return {room: room, player: player};
 }
 
-export const joinPlayerToRoom = (playerData, code) => {
+export const getRoomByCode = code => {
   const room = rooms.find(room => room.roomCode == code); 
-  
   if (!room) return false;
+  return room;
+}
+
+export const joinPlayerToRoom = (room, playerData) => {
 
   const playerIndex = addPlayerToRoom(room, playerData) - 1;
 
