@@ -86,3 +86,26 @@ export const MakeGameOverMsg = (winnerPID) => {
         winner: winnerPID
     }
 }
+
+// player and room related
+
+export const MakePlayerJoinMsg = (joinPID) => {
+    return {
+        type: "player-join",
+        player: joinPID
+    }
+}
+
+export const MakePlayerDisconnectMsg = (disconnectPID) => {
+    return {
+        type: "player-disconnect",
+        player: disconnectPID
+    }
+}
+
+export const MakeNewLeaderMsg = (leaderPID) => {
+    return {
+        type: "new-leader",
+        player: leaderPID
+    }
+}

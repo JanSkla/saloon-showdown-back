@@ -1,3 +1,4 @@
+import { MakeNewLeaderMsg, MakePlayerDisconnectMsg, MakePlayerJoinMsg } from "./serverToClientMessages.js";
 import { sendToAllInRoom } from "./utils.js";
 
 export const rooms = [];
@@ -12,7 +13,7 @@ const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
   console.log(playerData.pId)
 
-  sendToAllInRoom(room, "player " + playerData.pId + " joined");
+  sendToAllInRoom(room, JSON.stringify(MakePlayerJoinMsg(playerData.pId)));
 
   return room.players.push(playerData);
 }
@@ -45,8 +46,8 @@ export const removePlayer = (room, player) => {
 
   console.log("player " + pId + " disconnected");
   console.log("player " + room.leadPlayer.pId + " is now room leader");
-  sendToAllInRoom(room, "player " + pId + " disconnected");
-  sendToAllInRoom(room, "player " + room.leadPlayer.pId + " is now room leader");
+  sendToAllInRoom(room, JSON.stringify(MakePlayerDisconnectMsg(pId)));
+  sendToAllInRoom(room, JSON.stringify(MakeNewLeaderMsg(room.leadPlayer.pId)));
 }
 
 export const createRoom = (playerData, roomCode) => {

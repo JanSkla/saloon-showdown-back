@@ -113,3 +113,20 @@ round summary type shit
     winner: RECIEVE_TARGET_PID,
     message: "game is over, the winner is: {winner}"
 }
+
+// player and room related
+
+{
+    type: "player-join",
+    player: joinPID
+}
+
+{
+    type: "player-disconnect",
+    player: disconnectPID
+}
+
+{
+    type: "new-leader",
+    player: leaderPID
+}
