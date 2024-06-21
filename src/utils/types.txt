@@ -20,9 +20,11 @@ round summary type shit
 
 [ ... ]:
 
+//!!messages are not currently in use!!//
+
 (data.pId + "recieved a beer")
 {
-    type: "recieve-beer",
+    type: "recieved-beer",
     user: RECIEVE_TARGET_PID,
     message: "{user} recieved a beer"
 }
@@ -61,7 +63,7 @@ round summary type shit
 
 (data.pId + "destroyed " + targetPlayerData.pId + "'s beer")
 {
-    type: "break-beer",
+    type: "shoot-beer",
     user: RECIEVE_TARGET_PID,
     target: TARGET_PID,
     message: "{user} destroyed {target}'s beer"
@@ -84,6 +86,23 @@ round summary type shit
 (chronicDrinker.pId + "used a beer")
 {
     type: "drink-beer",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} is blocking"
+}
+
+
+//finished means the beer added an hp, started means he died in the process of drinking it
+
+(chronicDrinker.pId + "started a beer")
+{
+    type: "started-beer",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} is blocking"
+}
+
+(chronicDrinker.pId + "finished a beer")
+{
+    type: "finished-beer",
     user: RECIEVE_TARGET_PID,
     message: "{user} is blocking"
 }

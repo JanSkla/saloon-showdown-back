@@ -19,7 +19,9 @@ export const joinRoomService = (ws, code) => {
 
   const room = getRoomByCode(code);
 
-  if (room.state != "lobby" || room.state != "game-over"){
+  console.log(room.state, "roomstate join")
+
+  if (room.state != "lobby" && room.state != "game-over"){
     ws.send("cannot join a game that is running");
     ws.close();
   }

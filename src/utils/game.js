@@ -1,4 +1,5 @@
 import { CHOOSE_TIME, GATHER_TIME, PROCESS_TIME } from "../config.js";
+import { MakeAmmoMsg, MakeBlockMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeStartedBeerMsg } from "./serverToClientMessages.js";
 import { getPlayerByPIdAndRoom, sendToAllInRoom } from "./utils.js";
 
 export const startGame = (room) => {
@@ -47,7 +48,7 @@ const processChoices = (room) => {
 
     if(data.beer == "waiting"){
       tempBeerState = "ready";
-      roundSummary.push(data.pId + "recieved a beer")
+      roundSummary.push(MakeRecievedBeerMsg(data.pId));
     }
     
     if(data.choice.type == undefined){
@@ -61,7 +62,7 @@ const processChoices = (room) => {
           case "ammo":
             data.ammo++;
 
-            roundSummary.push(data.pId + "added ammo")
+            roundSummary.push(MakeAmmoMsg(data.pId));
             break;
           case "shoot":
             const targetPlayerData = room.gameData.playerData.find(pData=> pData.pId == data.choice.target);
@@ -74,7 +75,7 @@ const processChoices = (room) => {
               targetPlayerData.health -= 1;
               if (targetPlayerData.health < 1){
                 const i = room.gameData.playerData.indexOf(targetPlayerData);
-                roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " target died");
+                roundSummary.push(MakeShootDeathMsg(data.pId, targetPlayerData.pId));
 
                 console.log("player " + targetPlayerData.pId + " died");
                 room.gameData.playerData.splice(i, 1);
@@ -82,22 +83,22 @@ const processChoices = (room) => {
               else{
                 if(targetPlayerData.beer){
                   targetPlayerData.beer = false;
-                  roundSummary.push(data.pId + "destroyed " + targetPlayerData.pId + "'s beer");
+                  roundSummary.push(MakeShootBeerMsg(data.pId, targetPlayerData.pId));
                 }
-                roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " target damaged");
+                roundSummary.push(MakeShootDamageMsg(data.pId, targetPlayerData.pId));
               }
             }
             else
-              roundSummary.push(data.pId + "shoots at target: " + targetPlayerData.pId + " shot was blocked");
+              roundSummary.push(MakeShootBlockMsg(data.pId, targetPlayerData.pId));
             break;
           case "block":
 
-            roundSummary.push(data.pId + "is blocking")
+            roundSummary.push(MakeBlockMsg(data.pId));
             break;
           case "order-beer":
             if(data.beer == false){
               tempBeerState = "waiting";
-              roundSummary.push(data.pId + "ordered a beer")
+              roundSummary.push(MakeOrderBeerMsg(data.pId));
             }
             break;
           case "drink-beer":
@@ -114,9 +115,13 @@ const processChoices = (room) => {
   });
 
   beerDrinkers.forEach(chronicDrinker => {
-    if (chronicDrinker.health > 0 ) {
+    
+    if (chronicDrinker.health <= 0){
+      roundSummary.push(MakeStartedBeerMsg(chronicDrinker.pId))
+    }
+    else{
       chronicDrinker.health += 1;
-      roundSummary.push(chronicDrinker.pId + "used a beer")
+      roundSummary.push(MakeFinishedBeerMsg(chronicDrinker.pId))
     }
   })
 
@@ -172,12 +177,12 @@ const processEvent = (room) => {
 
   const roundSummary = processChoices(room);
 
-  sendToAllInRoom(room, JSON.stringify(roundSummary));
+  sendToAllInRoom(room, JSON.stringify(MakeRoundActionsMsg(roundSummary)));
 
   if (room.gameData.playerData.length == 1){
     const winner = room.gameData.playerData[0];
     room.state = "game-over";
-    sendToAllInRoom(room, "game is over, the winner is: " + winner.pId);
+    sendToAllInRoom(room, JSON.stringify(MakeGameOverMsg(winner.pId)));
     return;
   }
 

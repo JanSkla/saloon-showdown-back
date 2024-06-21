@@ -16,9 +16,9 @@ const startWs = () => {
 
       // one big try catch to make server not crash...
       try { 
-        data = JSON.parse(data + "s");
+        data = JSON.parse(data);
 
-        console.log("recieved: %d", data)
+        console.log("recieved:" + data)
 
         if(!data.type) { ws.close(); return; };
 
