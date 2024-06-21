@@ -1,3 +1,5 @@
+import { sendToAllInRoom } from "./utils.js";
+
 export const rooms = [];
 
 let playerIdCounter = 0;
@@ -9,18 +11,42 @@ const getNewPlayerId = () => {
 const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
   console.log(playerData.pId)
+
+  sendToAllInRoom(room, "player " + playerData.pId + " joined");
+
   return room.players.push(playerData);
 }
 
 export const removeRoom = (index) => {
   rooms.splice(index - 1, 1);
+  console.log("rooms:", rooms);
 }
 
-export const removePlayer = (roomIndex, playerIndex) => {
-  rooms[roomIndex].players.splice(playerIndex - 1, 1);
-  if (rooms[roomIndex].players.length < 1){
-    removeRoom(roomIndex);
+export const removePlayer = (room, player) => {
+
+  const playerIndex = room.players.indexOf(player);
+  const pId = player.pId;
+
+  room.players.splice(playerIndex, 1);
+
+  
+  if (room.players.length < 1){
+    removeRoom(rooms.indexOf(room));
+    return;
   }
+
+  if(room.gameData){
+    const deletePlayerDataIndex = room.gameData.playerData.findIndex(data => data.pId == player.pId);
+    console.log(deletePlayerDataIndex, "deletePlayerDataIndex")
+    if(deletePlayerDataIndex >= 0) room.gameData.playerData.splice(deletePlayerDataIndex, 1);
+  }
+
+  room.leadPlayer = room.players[0];
+
+  console.log("player " + pId + " disconnected");
+  console.log("player " + room.leadPlayer.pId + " is now room leader");
+  sendToAllInRoom(room, "player " + pId + " disconnected");
+  sendToAllInRoom(room, "player " + room.leadPlayer.pId + " is now room leader");
 }
 
 export const createRoom = (playerData, roomCode) => {

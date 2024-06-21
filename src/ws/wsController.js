@@ -15,10 +15,10 @@ const startWs = () => {
     ws.on('message', (data) => {
 
       // one big try catch to make server not crash...
-      try { 
-        data = JSON.parse(data);
-
+      try {
         console.log("recieved:" + data)
+
+        data = JSON.parse(data);
 
         if(!data.type) { ws.close(); return; };
 
@@ -45,8 +45,7 @@ const startWs = () => {
           ws.on('close', () => {
             console.log('closed');
             if(room && player){
-              const roomIndex = rooms.indexOf(room);
-              removePlayer(roomIndex, rooms[roomIndex].players.indexOf(player));
+              removePlayer(room, player);
             }
           });
 

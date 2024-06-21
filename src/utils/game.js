@@ -179,10 +179,15 @@ const processEvent = (room) => {
 
   sendToAllInRoom(room, JSON.stringify(MakeRoundActionsMsg(roundSummary)));
 
+  console.log("")
+
   if (room.gameData.playerData.length == 1){
+    console.log("game is over")
     const winner = room.gameData.playerData[0];
     room.state = "game-over";
     sendToAllInRoom(room, JSON.stringify(MakeGameOverMsg(winner.pId)));
+    
+    console.log(room)
     return;
   }
 
