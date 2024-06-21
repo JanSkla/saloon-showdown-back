@@ -3,10 +3,10 @@ import config from './config.js'
 import startWs from './ws/wsController.js'
 
 
-var app = express()
+// var app = express()
 
 
 startWs();
 
-console.log("running at port: " + config.serverPort)
-app.listen(config.serverPort);
+// console.log("running at port: " + config.serverPort)
+// app.listen(config.serverPort);

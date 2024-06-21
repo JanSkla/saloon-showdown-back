@@ -14,81 +14,82 @@ const startWs = () => {
 
     ws.on('message', (data) => {
 
-      try {
-        data = JSON.parse(data);
-      } catch (e) {
-        console.log(e)
-        ws.close();
-        return false;
-      }
+      // one big try catch to make server not crash...
+      try { 
+        data = JSON.parse(data + "s");
 
-      console.log(data)
+        console.log("recieved: %d", data)
 
-      if(!data.type) { ws.close(); return; };
+        if(!data.type) { ws.close(); return; };
 
-      if(!room){
-        switch (data.type){
-          case "create-room":
-            const joinData = createRoomService(ws);
-            room = joinData.room;
-            player = joinData.player;
-            break;
-            
-          case "join-room":
-            if(joinRoomValidateData(data)){
-              const joinData = joinRoomService(ws, data.code);
+        if(!room){
+          switch (data.type){
+            case "create-room":
+              const joinData = createRoomService(ws);
               room = joinData.room;
               player = joinData.player;
               break;
+              
+            case "join-room":
+              if(joinRoomValidateData(data)){
+                const joinData = joinRoomService(ws, data.code);
+                room = joinData.room;
+                player = joinData.player;
+                break;
+              }
+    
+            default:
+              ws.close();
+              break;
+          }
+          ws.on('close', () => {
+            console.log('closed');
+            if(room && player){
+              const roomIndex = rooms.indexOf(room);
+              removePlayer(roomIndex, rooms[roomIndex].players.indexOf(player));
             }
-  
+          });
+
+        } else if (room.state == "lobby" || room.state == "game-over") {
+          console.log("has a room")
+          switch (data.type){
+            case "start-game":
+              if(room.leadPlayer == player){
+                startGameService(room);
+              }
+              break;
           default:
             ws.close();
             break;
         }
-        ws.on('close', () => {
-          console.log('closed');
-          if(room && player){
-            const roomIndex = rooms.indexOf(room);
-            removePlayer(roomIndex, rooms[roomIndex].players.indexOf(player));
-          }
-        });
-
-      } else if (room.state == "lobby" || room.state == "game-over") {
-        console.log("has a room")
-        switch (data.type){
-          case "start-game":
-            if(room.leadPlayer == player){
-              startGameService(room);
-            }
-            break;
-        default:
-          ws.close();
-          break;
-      }
-      } else if (room.state == "game") {
-        
-        switch (data.type){
-          case "choose-card":
-            switch (room.gameData.state){
-              case "choose":
-              case "gathering":
-                if (chooseCardValidateData(data)) {
-                  handlePlayerChoice(room, player, data);
-                  break;
-                }
-            default:
-              ws.close();
+        } else if (room.state == "game") {
+          
+          switch (data.type){
+            case "choose-card":
+              switch (room.gameData.state){
+                case "choose":
+                case "gathering":
+                  if (chooseCardValidateData(data)) {
+                    handlePlayerChoice(room, player, data);
+                    break;
+                  }
+              default:
+                ws.close();
+                break;
+              }
               break;
-            }
+          default:
+            ws.close();
             break;
-        default:
-          ws.close();
-          break;
+          }
         }
-      }
-      else {
+        else {
+          ws.close();
+        }
+      } catch (e) {
+        console.log(e)
         ws.close();
+        return false;
       }
     });
   });
