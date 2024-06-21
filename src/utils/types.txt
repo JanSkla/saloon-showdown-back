@@ -1,3 +1,96 @@
 beer = false | "waiting" | "ready"
 choose cards = "ammo" | "block" | "shoot" | "order-beer" | "drink-beer"
 room.state = "lobby" | "game" | "loading" | "game-over"
+
+# messages S-->C:
+
+card options
+
+{
+    type: "round-options",
+    data: ["ammo", "block", ... ]
+}
+
+round summary type shit
+
+{
+    type: "round-actions",
+    data: [ ... ]
+}
+
+[ ... ]:
+
+(data.pId + "recieved a beer")
+{
+    type: "recieve-beer",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} recieved a beer"
+}
+
+(data.pId + "added ammo")
+{
+    type: "ammo",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} added ammo"
+}
+
+
+(data.pId + "shoots at target: " + targetPlayerData.pId + " target damaged")
+{
+    type: "shoot-damage",
+    user: RECIEVE_TARGET_PID,
+    target: TARGET_PID,
+    message: "{user} shoots at target: {target} target damaged"
+}
+
+(data.pId + "shoots at target: " + targetPlayerData.pId + " target died");
+{
+    type: "shoot-death",
+    user: RECIEVE_TARGET_PID,
+    target: TARGET_PID,
+    message: "{user} shoots at target: {target} target died"
+}
+
+(data.pId + "shoots at target: " + targetPlayerData.pId + " shot was blocked")
+{
+    type: "shoot-block",
+    user: RECIEVE_TARGET_PID,
+    target: TARGET_PID,
+    message: "{user} shoots at target: {target} shot was blocked
+}
+
+(data.pId + "destroyed " + targetPlayerData.pId + "'s beer")
+{
+    type: "break-beer",
+    user: RECIEVE_TARGET_PID,
+    target: TARGET_PID,
+    message: "{user} destroyed {target}'s beer"
+}
+
+(data.pId + "is blocking")
+{
+    type: "block",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} is blocking"
+}
+
+(data.pId + "ordered a beer")
+{
+    type: "order-beer",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} is blocking"
+}
+
+(chronicDrinker.pId + "used a beer")
+{
+    type: "drink-beer",
+    user: RECIEVE_TARGET_PID,
+    message: "{user} is blocking"
+}
+
+(room, "game is over, the winner is: " + winner.pId);
+{
+    type: "game-over",
+    winner: RECIEVE_TARGET_PID,
+    message: "game is over, the winner is: {winner}"
+}
