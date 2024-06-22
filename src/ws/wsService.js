@@ -40,10 +40,10 @@ export const joinRoomService = (ws, code) => {
 export const startGameService = (room) => {
   room.state = "loading";
 
-  sendToAllInRoom(room, "Game starts in 3 seconds");
+  sendToAllInRoom(room, JSON.stringify({type: "start-countdown", message: "Game starts in 3 seconds"}));
 
   setTimeout(() => {
-    sendToAllInRoom(room, "START");
+    sendToAllInRoom(room, JSON.stringify({type: "game-started"}));
     startGame(room);
   }, 3000);
 }
