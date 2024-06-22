@@ -13,7 +13,7 @@ const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
   console.log(playerData.pId)
 
-  sendToAllInRoom(room, JSON.stringify(MakePlayerJoinMsg(playerData.pId)));
+  sendToAllInRoom(room, JSON.stringify(MakePlayerJoinMsg(playerData)));
 
   return room.players.push(playerData);
 }

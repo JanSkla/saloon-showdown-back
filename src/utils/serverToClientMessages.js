@@ -89,10 +89,17 @@ export const MakeGameOverMsg = (winnerPID) => {
 
 // player and room related
 
-export const MakePlayerJoinMsg = (joinPID) => {
+const ParsePlayerDataForFrontEnd = (player) => {
+    return {
+        pId: player.pId,
+        name: player.name
+    };
+}
+
+export const MakePlayerJoinMsg = (player) => {
     return {
         type: "player-join",
-        player: joinPID
+        player: ParsePlayerDataForFrontEnd(player)
     }
 }
 
@@ -116,12 +123,9 @@ export const ParsePlayersDataForFrontEnd = (room) => {
     const leadPID = room.leadPlayer.pId
 
     room.players.forEach(player => {
-        const pData = {
-            pId: player.pId,
-            name: player.name
-        };
-        if(leadPID == player.pId) pData.isLeadPlayer = true;
+        const pData = ParsePlayerDataForFrontEnd(player);
 
+        if(leadPID == player.pId) pData.isLeadPlayer = true;
         players.push(pData);
     })
 
