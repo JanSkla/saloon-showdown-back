@@ -29,7 +29,7 @@ export const joinRoomService = (ws, code) => {
   const joinData = joinPlayerToRoom(room, { name: "pepik", ws: ws });
 
 
-  const response = !!joinData ? {type: "join-room" ,status: 200, pId: joinData.player.pId} : {status: 400};
+  const response = !!joinData ? {type: "join-room" ,status: 200, code: code, pId: joinData.player.pId} : {status: 400};
 
   ws.send(JSON.stringify(response));
 
