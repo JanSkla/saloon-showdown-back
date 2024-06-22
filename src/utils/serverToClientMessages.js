@@ -109,3 +109,21 @@ export const MakeNewLeaderMsg = (leaderPID) => {
         player: leaderPID
     }
 }
+
+export const ParsePlayersDataForFrontEnd = (room) => {
+
+    const players = [];
+    const leadPID = room.leadPlayer.pId
+
+    room.players.forEach(player => {
+        const pData = {
+            pId: player.pId,
+            name: player.name
+        };
+        if(leadPID == player.pId) pData.isLeadPlayer = true;
+
+        players.push(pData);
+    })
+
+    return players;
+}
