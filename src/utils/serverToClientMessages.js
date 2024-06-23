@@ -1,8 +1,91 @@
+import { CHOOSE_TIME, GATHER_TIME, PROCESS_TIME } from "../config.js"
+
+export const MakeCreateRoomMsg = (roomCode, pId, players) => {
+    return {
+        type: "create-room",
+        status: 200,
+        code: roomCode,
+        pId: pId,
+        players: players
+    }
+}
+
+export const MakeJointRoomMsg = (code, pId, players) => {
+    return {
+        type: "join-room",
+        status: 200,
+        code: code,
+        pId: pId,
+        players: players
+    }
+}
+// player and room related
+
+const ParsePlayerDataForFrontEnd = (player) => {
+    return {
+        pId: player.pId,
+        name: player.name
+    };
+}
+
+export const MakePlayerJoinMsg = (player) => {
+    return {
+        type: "player-join",
+        player: ParsePlayerDataForFrontEnd(player)
+    }
+}
+
+export const MakePlayerDisconnectMsg = (disconnectPID) => {
+    return {
+        type: "player-disconnect",
+        player: disconnectPID
+    }
+}
+
+export const MakeNewLeaderMsg = (leaderPID) => {
+    return {
+        type: "new-leader",
+        player: leaderPID
+    }
+}
+
+export const ParsePlayersDataForFrontEnd = (room) => {
+
+    const players = [];
+    const leadPID = room.leadPlayer.pId
+
+    room.players.forEach(player => {
+        const pData = ParsePlayerDataForFrontEnd(player);
+
+        if(leadPID == player.pId) pData.isLeadPlayer = true;
+        players.push(pData);
+    })
+
+    return players;
+}
+
+// pre-game related
+
+export const MakeStartCountdownMessage = () => {
+    return {
+        type: "start-countdown",
+        message: "Game starts in 3 seconds"
+    }
+}
+
+export const MakeGameStartedMessage = () => {
+    return {
+        type: "game-started"
+    }
+}
+
+// game round related
+
 
 export const MakeRoundActionsMsg = (actions) => {
     return {
         type: "round-actions",
-        data: actions   
+        data: actions   //array
     }
 }
 
@@ -87,47 +170,24 @@ export const MakeGameOverMsg = (winnerPID) => {
     }
 }
 
-// player and room related
-
-const ParsePlayerDataForFrontEnd = (player) => {
+export const MakeChooseMsg = (options) => {
     return {
-        pId: player.pId,
-        name: player.name
-    };
-}
-
-export const MakePlayerJoinMsg = (player) => {
-    return {
-        type: "player-join",
-        player: ParsePlayerDataForFrontEnd(player)
+        type: "choose",
+        options: options,
+        time: CHOOSE_TIME
     }
 }
 
-export const MakePlayerDisconnectMsg = (disconnectPID) => {
+export const MakeStopChoiceMsg = () => {
     return {
-        type: "player-disconnect",
-        player: disconnectPID
+        type: "stop-choice",
+        time: GATHER_TIME,
     }
 }
 
-export const MakeNewLeaderMsg = (leaderPID) => {
+export const MakeProcessingMsg = () => {
     return {
-        type: "new-leader",
-        player: leaderPID
+        type: "processing",
+        time: PROCESS_TIME,
     }
-}
-
-export const ParsePlayersDataForFrontEnd = (room) => {
-
-    const players = [];
-    const leadPID = room.leadPlayer.pId
-
-    room.players.forEach(player => {
-        const pData = ParsePlayerDataForFrontEnd(player);
-
-        if(leadPID == player.pId) pData.isLeadPlayer = true;
-        players.push(pData);
-    })
-
-    return players;
 }

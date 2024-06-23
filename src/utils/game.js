@@ -1,5 +1,5 @@
 import { CHOOSE_TIME, GATHER_TIME, PROCESS_TIME } from "../config.js";
-import { MakeAmmoMsg, MakeBlockMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeStartedBeerMsg } from "./serverToClientMessages.js";
+import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeProcessingMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeStartedBeerMsg, MakeStopChoiceMsg } from "./serverToClientMessages.js";
 import { getPlayerByPIdAndRoom, sendToAllInRoom } from "./utils.js";
 
 export const startGame = (room) => {
@@ -148,12 +148,10 @@ const chooseEvent = (room) => {
     playerData.options = getOptions(playerData),
     playerData.choice = { type: undefined }
 
-    player.ws.send(JSON.stringify(playerData.options));
+    player.ws.send(JSON.stringify(MakeChooseMsg(playerData.options)));
   })
 
   console.log(room.gameData.state)
-  
-  sendToAllInRoom(room, "make a choice");
 
   setTimeout(() => gatherEvent(room), CHOOSE_TIME);
 }
@@ -162,7 +160,7 @@ const gatherEvent = (room) => {
   room.gameData.state = "gathering"; //gathering tells clients that they should not call any more choose calls, it's a delay for previous ones to finish
   console.log(room.gameData.state)
 
-  sendToAllInRoom(room, "gathering choices");
+  sendToAllInRoom(room, JSON.stringify(MakeStopChoiceMsg()));
 
   setTimeout(() => processEvent(room), GATHER_TIME);
 }
@@ -173,7 +171,7 @@ const processEvent = (room) => {
   console.log(room.gameData.state)
   console.log(room.gameData.playerData)
   
-  sendToAllInRoom(room, "processing choices");
+  sendToAllInRoom(room, JSON.stringify(MakeProcessingMsg()));
 
   const roundSummary = processChoices(room);
 

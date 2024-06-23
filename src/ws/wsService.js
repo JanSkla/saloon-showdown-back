@@ -1,6 +1,6 @@
 import { startGame } from "../utils/game.js";
 import { createRoom, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
-import { ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
+import { MakeCreateRoomMsg, MakeGameStartedMessage, MakeJointRoomMsg, MakeStartCountdownMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
 import { makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = ws => {
@@ -9,9 +9,7 @@ export const createRoomService = ws => {
 
   const joinData = createRoom({ name: "pepik", ws: ws }, roomCode);
 
-  const status = joinData == false ? 400 : 200; 
-
-  ws.send(JSON.stringify({type: "create-room" ,status: status, code: roomCode, pId: joinData.player.pId, players:ParsePlayersDataForFrontEnd(joinData.room)}));
+  ws.send(JSON.stringify(MakeCreateRoomMsg(roomCode, joinData.player.pId, ParsePlayersDataForFrontEnd(joinData.room))));
 
   return joinData;
 }
@@ -30,7 +28,7 @@ export const joinRoomService = (ws, code) => {
   const joinData = joinPlayerToRoom(room, { name: "pepik", ws: ws });
 
 
-  const response = !!joinData ? {type: "join-room" ,status: 200, code: code, pId: joinData.player.pId, players:ParsePlayersDataForFrontEnd(room)} : {status: 400};
+  const response = !!joinData ? MakeJointRoomMsg( code,  joinData.player.pId, ParsePlayersDataForFrontEnd(room)) : {status: 400};
 
   ws.send(JSON.stringify(response));
 
@@ -40,10 +38,10 @@ export const joinRoomService = (ws, code) => {
 export const startGameService = (room) => {
   room.state = "loading";
 
-  sendToAllInRoom(room, JSON.stringify({type: "start-countdown", message: "Game starts in 3 seconds"}));
+  sendToAllInRoom(room, JSON.stringify(MakeStartCountdownMessage()));
 
   setTimeout(() => {
-    sendToAllInRoom(room, JSON.stringify({type: "game-started"}));
+    sendToAllInRoom(room, JSON.stringify(MakeGameStartedMessage()));
     startGame(room);
   }, 3000);
 }
