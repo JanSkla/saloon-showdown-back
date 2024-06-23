@@ -57,7 +57,7 @@ export const ParsePlayersDataForFrontEnd = (room) => {
     room.players.forEach(player => {
         const pData = ParsePlayerDataForFrontEnd(player);
 
-        if(leadPID == player.pId) pData.isLeadPlayer = true;
+        pData.isLeadPlayer = leadPID == player.pId;
         players.push(pData);
     })
 
