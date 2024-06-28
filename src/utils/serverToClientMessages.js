@@ -19,6 +19,13 @@ export const MakeJointRoomMsg = (code, pId, players) => {
         players: players
     }
 }
+
+export const MakeErrorJointRoomMsg = () => {
+    return {
+        type: "join-room",
+        status: 400
+    }
+}
 // player and room related
 
 const ParsePlayerDataForFrontEnd = (player) => {
