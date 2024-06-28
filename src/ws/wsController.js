@@ -33,6 +33,12 @@ const startWs = () => {
             case "join-room":
               if(joinRoomValidateData(data)){
                 const joinData = joinRoomService(ws, data.code);
+
+                if (!joinData){
+                  console.log("bad join code attempt");
+                  return;
+                }
+
                 room = joinData.room;
                 player = joinData.player;
                 break;

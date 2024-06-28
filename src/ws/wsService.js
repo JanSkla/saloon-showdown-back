@@ -23,7 +23,7 @@ export const joinRoomService = (ws, code) => {
   if (room.state != "lobby" && room.state != "game-over"){
     ws.send(JSON.stringify(MakeErrorJointRoomMsg()));
     ws.close();
-    return;
+    return false;
   }
 
   const joinData = joinPlayerToRoom(room, { name: "pepik", ws: ws });
