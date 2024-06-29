@@ -142,6 +142,14 @@ export const MakeShootBeerMsg = (userPID, targetPID) => {
     }
 }
 
+export const MakeShootDrinkingBeerMsg = (userPID, targetPID) => {
+    return {
+        type: "shoot-drinking-beer",
+        user: userPID,
+        target: targetPID
+    }
+}
+
 export const MakeBlockMsg = (userPID) => {
     return {
         type: "block",

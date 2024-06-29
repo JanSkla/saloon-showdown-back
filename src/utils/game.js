@@ -1,5 +1,5 @@
 import { CHOOSE_TIME, GATHER_TIME, PROCESS_TIME } from "../config.js";
-import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeProcessingMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeStartedBeerMsg, MakeStopChoiceMsg } from "./serverToClientMessages.js";
+import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeProcessingMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeShootDrinkingBeerMsg, MakeStartedBeerMsg, MakeStopChoiceMsg } from "./serverToClientMessages.js";
 import { getPlayerByPIdAndRoom, sendToAllInRoom } from "./utils.js";
 
 export const startGame = (room) => {
@@ -41,6 +41,8 @@ const processChoices = (room) => {
 
   const beerDrinkers = [];
 
+  const beerChanges = [];
+
   room.gameData.playerData.forEach(data =>{
 
     let tempBeerState = data.beer;
@@ -81,9 +83,14 @@ const processChoices = (room) => {
                 room.gameData.playerData.splice(i, 1);
               }
               else{
-                if(targetPlayerData.beer){
+                if(targetPlayerData.beer == "ready"){
                   targetPlayerData.beer = false;
-                  roundSummary.push(MakeShootBeerMsg(data.pId, targetPlayerData.pId));
+                  if(targetPlayerData.choice.type == "drink-beer"){
+                    roundSummary.push(MakeShootDrinkingBeerMsg(data.pId, targetPlayerData.pId));
+                  }
+                  else{
+                    roundSummary.push(MakeShootBeerMsg(data.pId, targetPlayerData.pId));
+                  }
                 }
                 roundSummary.push(MakeShootDamageMsg(data.pId, targetPlayerData.pId));
               }
@@ -111,7 +118,7 @@ const processChoices = (room) => {
       }
     }
 
-    data.beer = tempBeerState;
+    beerChanges.push({newBeerState: tempBeerState, player: data});
   });
 
   beerDrinkers.forEach(chronicDrinker => {
@@ -123,6 +130,10 @@ const processChoices = (room) => {
       chronicDrinker.health += 1;
       roundSummary.push(MakeFinishedBeerMsg(chronicDrinker.pId))
     }
+  })
+
+  beerChanges.forEach(beerChange => {
+    beerChange.player.beer = beerChange.newBeerState;
   })
 
   console.log("gameData", room.gameData);
