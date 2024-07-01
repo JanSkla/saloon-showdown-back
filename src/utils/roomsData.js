@@ -19,7 +19,7 @@ const addPlayerToRoom = (room, playerData) => {
 }
 
 export const removeRoom = (index) => {
-  rooms.splice(index - 1, 1);
+  rooms.splice(index, 1);
   console.log("rooms:", rooms);
 }
 

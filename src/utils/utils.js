@@ -14,7 +14,6 @@ export const sendToAllInRoom = (room, value) => {
   console.log(room.players)
   room.players.forEach(player => {
     
-  console.log(player)
     player.ws.send(value);
   });
 }
