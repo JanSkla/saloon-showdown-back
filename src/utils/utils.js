@@ -21,3 +21,13 @@ export const sendToAllInRoom = (room, value) => {
 export const getPlayerByPIdAndRoom = (room, pId) => {
   return room.players.find(player => player.pId == pId);
 }
+
+
+export const getRandomName = () => {
+
+  const names = ["Duckster", "Lucky_Ducke", "The_Duckton_Brother", "Old_Shatterduck"]
+
+  const random = Math.floor(Math.random() * names.length);
+
+  return names[random];
+}

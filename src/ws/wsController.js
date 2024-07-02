@@ -25,14 +25,14 @@ const startWs = () => {
         if(!room){
           switch (data.type){
             case "create-room":
-              const joinData = createRoomService(ws);
+              const joinData = createRoomService(ws, data.name);
               room = joinData.room;
               player = joinData.player;
               break;
               
             case "join-room":
               if(joinRoomValidateData(data)){
-                const joinData = joinRoomService(ws, data.code);
+                const joinData = joinRoomService(ws, data.name, data.code);
 
                 if (!joinData){
                   console.log("bad join code attempt");

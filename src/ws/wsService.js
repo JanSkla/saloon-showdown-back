@@ -3,18 +3,18 @@ import { createRoom, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.
 import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeGameStartedMessage, MakeJointRoomMsg, MakeStartCountdownMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
 import { makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
-export const createRoomService = ws => {
+export const createRoomService = (ws, name) => {
   
   const roomCode = makeRandomString(4);
 
-  const joinData = createRoom({ name: "pepik", ws: ws }, roomCode);
+  const joinData = createRoom({ name: name, ws: ws }, roomCode);
 
   ws.send(JSON.stringify(MakeCreateRoomMsg(roomCode, joinData.player.pId, ParsePlayersDataForFrontEnd(joinData.room))));
 
   return joinData;
 }
 
-export const joinRoomService = (ws, code) => {
+export const joinRoomService = (ws, name, code) => {
 
   const room = getRoomByCode(code);
 
@@ -26,7 +26,7 @@ export const joinRoomService = (ws, code) => {
     return false;
   }
 
-  const joinData = joinPlayerToRoom(room, { name: "pepik", ws: ws });
+  const joinData = joinPlayerToRoom(room, { name: name, ws: ws });
 
 
   const response = !!joinData ? MakeJointRoomMsg( code,  joinData.player.pId, ParsePlayersDataForFrontEnd(room)) : {status: 400};

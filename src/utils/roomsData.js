@@ -1,5 +1,5 @@
 import { MakeNewLeaderMsg, MakePlayerDisconnectMsg, MakePlayerJoinMsg } from "./serverToClientMessages.js";
-import { sendToAllInRoom } from "./utils.js";
+import { getRandomName, sendToAllInRoom } from "./utils.js";
 
 export const rooms = [];
 
@@ -12,6 +12,9 @@ const getNewPlayerId = () => {
 const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
   console.log(playerData.pId)
+
+  if (!playerData.name)
+    playerData.name = getRandomName() + playerData.pId;
 
   sendToAllInRoom(room, JSON.stringify(MakePlayerJoinMsg(playerData)));
 
