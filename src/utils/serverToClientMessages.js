@@ -110,11 +110,12 @@ export const MakeAmmoMsg = (userPID) => {
     }
 }
 
-export const MakeShootDamageMsg = (userPID, targetPID) => {
+export const MakeShootDamageMsg = (userPID, targetPID, targetHealth) => {
     return {
         type: "shoot-damage",
         user: userPID,
-        target: targetPID
+        target: targetPID,
+        targetHealth: targetHealth
     }
 }
 

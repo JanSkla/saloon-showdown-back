@@ -67,7 +67,7 @@ const processChoices = (room) => {
             roundSummary.push(MakeAmmoMsg(data.pId));
             break;
           case "shoot":
-            const targetPlayerData = room.gameData.playerData.find(pData=> pData.pId == data.choice.target);
+            const targetPlayerData = room.gameData.playerData.find(pData=> pData.pId === data.choice.target);
             if (!targetPlayerData){
               console.log("target player does not exist");
               break;
@@ -92,7 +92,7 @@ const processChoices = (room) => {
                     roundSummary.push(MakeShootBeerMsg(data.pId, targetPlayerData.pId));
                   }
                 }
-                roundSummary.push(MakeShootDamageMsg(data.pId, targetPlayerData.pId));
+                roundSummary.push(MakeShootDamageMsg(data.pId, targetPlayerData.pId, targetPlayerData.health));
               }
             }
             else
@@ -135,8 +135,6 @@ const processChoices = (room) => {
   beerChanges.forEach(beerChange => {
     beerChange.player.beer = beerChange.newBeerState;
   })
-
-  console.log("gameData", room.gameData);
 
   return roundSummary;
 }
@@ -187,8 +185,6 @@ const processEvent = (room) => {
   const roundSummary = processChoices(room);
 
   sendToAllInRoom(room, JSON.stringify(MakeRoundActionsMsg(roundSummary)));
-
-  console.log("")
 
   if (room.gameData.playerData.length == 1){
     console.log("game is over")

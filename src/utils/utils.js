@@ -11,7 +11,6 @@ export const makeRandomString = (length)  => {
 }
 
 export const sendToAllInRoom = (room, value) => {
-  console.log(room.players)
   room.players.forEach(player => {
     
     player.ws.send(value);

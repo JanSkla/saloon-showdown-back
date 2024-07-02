@@ -13,7 +13,7 @@ export const chooseCardValidateData = (data) => {
     case "drink-beer":
       return true;
     case "shoot":
-      return !!data.target;
+      return data.target !== undefined;
     default:
       return false;
   }
