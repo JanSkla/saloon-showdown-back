@@ -78,6 +78,13 @@ export const MakeLoadGameMessage = () => {
     }
 }
 
+export const MakePlayersLoadedMessage = (players) => {
+    return {
+        type: "players-loaded",
+        players: players
+    }
+}
+
 export const MakeStartCountdownMessage = () => {
     return {
         type: "start-countdown",
