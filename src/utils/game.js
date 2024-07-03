@@ -49,6 +49,8 @@ const processChoices = (room) => {
 
   const roundSummary = [];
 
+  const deaths = [];
+
   const beerDrinkers = [];
 
   const beerChanges = [];
@@ -86,11 +88,8 @@ const processChoices = (room) => {
             if(targetPlayerData.choice.type != "block"){
               targetPlayerData.health -= 1;
               if (targetPlayerData.health < 1){
-                const i = room.gameData.playerData.indexOf(targetPlayerData);
+                deaths.push(targetPlayerData);
                 roundSummary.push(MakeShootDeathMsg(data.pId, targetPlayerData.pId));
-
-                console.log("player " + targetPlayerData.pId + " died");
-                room.gameData.playerData.splice(i, 1);
               }
               else{
                 if(targetPlayerData.beer == "ready"){
@@ -130,6 +129,14 @@ const processChoices = (room) => {
 
     beerChanges.push({newBeerState: tempBeerState, player: data});
   });
+
+  deaths.forEach(LOOSER_hahaha => {
+    
+    const i = room.gameData.playerData.indexOf(LOOSER_hahaha);
+
+    console.log("player " + LOOSER_hahaha.pId + " died");
+    room.gameData.playerData.splice(i, 1);
+  })
 
   beerDrinkers.forEach(chronicDrinker => {
     
@@ -196,11 +203,12 @@ const processEvent = (room) => {
 
   sendToAllInRoom(room, JSON.stringify(MakeRoundActionsMsg(roundSummary)));
 
-  if (room.gameData.playerData.length == 1){
+  if (room.gameData.playerData.length <= 1){
     console.log("game is over")
     const winner = room.gameData.playerData[0];
     room.state = "game-over";
-    sendToAllInRoom(room, JSON.stringify(MakeGameOverMsg(winner.pId)));
+
+    sendToAllInRoom(room, JSON.stringify(MakeGameOverMsg(winner && winner.pId)));
     
     console.log(room)
     return;
