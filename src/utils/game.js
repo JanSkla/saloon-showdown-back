@@ -1,5 +1,5 @@
 import { CHOOSE_TIME, GATHER_TIME, PROCESS_TIME } from "../config.js";
-import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeOrderBeerMsg, MakeProcessingMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeShootDrinkingBeerMsg, MakeStartedBeerMsg, MakeStopChoiceMsg } from "./serverToClientMessages.js";
+import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGameOverMsg, MakeGameStartedMessage, MakeOrderBeerMsg, MakeProcessingMsg, MakeRecievedBeerMsg, MakeRoundActionsMsg, MakeShootBeerMsg, MakeShootBlockMsg, MakeShootDamageMsg, MakeShootDeathMsg, MakeShootDrinkingBeerMsg, MakeStartCountdownMessage, MakeStartedBeerMsg, MakeStopChoiceMsg } from "./serverToClientMessages.js";
 import { getPlayerByPIdAndRoom, sendToAllInRoom } from "./utils.js";
 
 export const startGame = (room) => {
@@ -21,6 +21,16 @@ export const startGame = (room) => {
   });
 
   chooseEvent(room);
+}
+
+export const startGameWithCountdown = (room) => {
+
+  sendToAllInRoom(room, JSON.stringify(MakeStartCountdownMessage()));
+
+  setTimeout(() => {
+    sendToAllInRoom(room, JSON.stringify(MakeGameStartedMessage()));
+    startGame(room);
+  }, 3000);
 }
 
 const getOptions = (playerData) => {

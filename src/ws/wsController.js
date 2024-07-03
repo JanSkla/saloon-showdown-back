@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, joinRoomService, startGameService } from "./wsService.js";
+import { createRoomService, gameLoadedService, joinRoomService, startGameService } from "./wsService.js";
 import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsValidations.js";
 import { removePlayer, rooms } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
@@ -87,6 +87,8 @@ const startWs = () => {
             ws.close();
             break;
           }
+        } else if (room.state == "loading") {
+          gameLoadedService(room, player);
         }
         else {
           ws.close();

@@ -72,6 +72,11 @@ export const ParsePlayersDataForFrontEnd = (room) => {
 }
 
 // pre-game related
+export const MakeLoadGameMessage = () => {
+    return {
+        type: "load-game"
+    }
+}
 
 export const MakeStartCountdownMessage = () => {
     return {

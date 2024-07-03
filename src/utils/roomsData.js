@@ -11,6 +11,7 @@ const getNewPlayerId = () => {
 
 const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
+  playerData.gameLoaded = false;
   console.log(playerData.pId)
 
   if (!playerData.name)
@@ -47,6 +48,7 @@ export const removePlayer = (room, player) => {
 
   room.leadPlayer = room.players[0];
 
+  console.log("players:", room.players.map(plr => plr.pId))
   console.log("player " + pId + " disconnected");
   console.log("player " + room.leadPlayer.pId + " is now room leader");
   sendToAllInRoom(room, JSON.stringify(MakePlayerDisconnectMsg(pId)));

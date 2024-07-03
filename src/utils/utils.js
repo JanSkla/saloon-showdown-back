@@ -30,3 +30,13 @@ export const getRandomName = () => {
 
   return names[random];
 }
+
+export const areAllPlayersLoaded = (room) => {
+  let allLoaded = true;
+
+  room.players.forEach(plr =>{
+    if(plr.gameLoaded === false) allLoaded = false;
+  });
+
+  return allLoaded;
+}
