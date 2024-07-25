@@ -52,6 +52,8 @@ const processChoices = (room) => {
   const deaths = [];
 
   const beerDrinkers = [];
+  
+  const shootData = [];
 
   const beerChanges = [];
 
@@ -63,6 +65,7 @@ const processChoices = (room) => {
     if(data.beer == "waiting"){
       tempBeerState = "ready";
       roundSummary.push(MakeRecievedBeerMsg(data.pId));
+      beerChanges.push({newBeerState: tempBeerState, player: data});
     }
     
     if(data.choice.type == undefined){
@@ -85,27 +88,7 @@ const processChoices = (room) => {
               break;
             }
             data.ammo -= 1;
-            if(targetPlayerData.choice.type != "block"){
-              targetPlayerData.health -= 1;
-              if (targetPlayerData.health < 1){
-                deaths.push(targetPlayerData);
-                roundSummary.push(MakeShootDeathMsg(data.pId, targetPlayerData.pId));
-              }
-              else{
-                if(targetPlayerData.beer == "ready"){
-                  targetPlayerData.beer = false;
-                  if(targetPlayerData.choice.type == "drink-beer"){
-                    roundSummary.push(MakeShootDrinkingBeerMsg(data.pId, targetPlayerData.pId));
-                  }
-                  else{
-                    roundSummary.push(MakeShootBeerMsg(data.pId, targetPlayerData.pId));
-                  }
-                }
-                roundSummary.push(MakeShootDamageMsg(data.pId, targetPlayerData.pId, targetPlayerData.health));
-              }
-            }
-            else
-              roundSummary.push(MakeShootBlockMsg(data.pId, targetPlayerData.pId));
+            shootData.push({userId: data.pId,targetPlayer: targetPlayerData})
             break;
           case "block":
 
@@ -114,21 +97,42 @@ const processChoices = (room) => {
           case "order-beer":
             if(data.beer == false){
               tempBeerState = "waiting";
-              roundSummary.push(MakeOrderBeerMsg(data.pId));
+              roundSummary.push(MakeOrderBeerMsg(data.pId))
+              beerChanges.push({newBeerState: tempBeerState, player: data});
             }
             break;
           case "drink-beer":
-            if(data.beer == "ready"){
-              tempBeerState = false; //need to resolve shoot first drink later
-              beerDrinkers.push(data);
-            }
+            beerDrinkers.push(data);
             break;
         }
       }
     }
-
-    beerChanges.push({newBeerState: tempBeerState, player: data});
   });
+
+  shootData.forEach(({userId, targetPlayer}) => {
+    if(targetPlayer.choice.type != "block"){
+      targetPlayer.health -= 1;
+      if (targetPlayer.health < 1){
+        deaths.push(targetPlayer);
+        roundSummary.push(MakeShootDeathMsg(userId, targetPlayer.pId));
+      }
+      else{
+        if(targetPlayer.beer == "ready"){
+          targetPlayer.beer = false;
+          roundSummary.push(MakeShootBeerMsg(userId, targetPlayer.pId));
+        }
+        
+        if(targetPlayer.choice.type == "drink-beer"){
+          roundSummary.push(MakeShootDrinkingBeerMsg(userId, targetPlayer.pId));
+        }
+        else{
+          roundSummary.push(MakeShootDamageMsg(userId, targetPlayer.pId, targetPlayer.health));
+        }
+      }
+    }
+    else
+      roundSummary.push(MakeShootBlockMsg(userId, targetPlayer.pId));
+  })
 
   deaths.forEach(LOOSER_hahaha => {
     
@@ -139,6 +143,9 @@ const processChoices = (room) => {
   })
 
   beerDrinkers.forEach(chronicDrinker => {
+    let tempBeerState;
+    if(chronicDrinker.beer == "ready"){
+      tempBeerState = false; //need to resolve shoot first drink later
     
     if (chronicDrinker.health <= 0){
       roundSummary.push(MakeStartedBeerMsg(chronicDrinker.pId))
@@ -146,6 +153,8 @@ const processChoices = (room) => {
     else{
       chronicDrinker.health += 1;
       roundSummary.push(MakeFinishedBeerMsg(chronicDrinker.pId))
+    }
+    beerChanges.push({newBeerState: tempBeerState, player: chronicDrinker});
     }
   })
 
