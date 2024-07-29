@@ -30,7 +30,7 @@ export const startGameWithCountdown = (room) => {
   setTimeout(() => {
     sendToAllInRoom(room, JSON.stringify(MakeGameStartedMessage()));
     startGame(room);
-  }, 3000);
+  }, 4000);
 }
 
 const getOptions = (playerData) => {
