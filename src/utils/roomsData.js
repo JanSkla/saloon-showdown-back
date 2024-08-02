@@ -88,7 +88,7 @@ export const joinPlayerToRoom = (room, playerData) => {
 }
 
 export const getPublicInLobbyRooms = () => {
-  const publicRooms = rooms.filter(room => room.public && room.state === "lobby");
+  const publicRooms = rooms.filter(room => room.public && (room.state === "lobby" || room.state === "game-over"));
   const formatted = publicRooms.map(r => {
     return {
       roomCode: r.roomCode,

@@ -138,6 +138,7 @@ const processChoices = (room) => {
     }
     else
       roundSummary.push(MakeShootBlockMsg(userId, targetPlayer.pId));
+    console.log(targetPlayer)
   })
 
   deaths.forEach(LOOSER_hahaha => {
@@ -150,8 +151,10 @@ const processChoices = (room) => {
 
   beerDrinkers.forEach(chronicDrinker => {
     let tempBeerState;
-    if(chronicDrinker.beer == "ready"){
-      tempBeerState = false; //need to resolve shoot first drink later
+    if(chronicDrinker.beer == "ready") {
+      tempBeerState = false;
+      beerChanges.push({newBeerState: tempBeerState, player: chronicDrinker});
+    }
     
     if (chronicDrinker.health <= 0){
       roundSummary.push(MakeStartedBeerMsg(chronicDrinker.pId))
@@ -160,8 +163,9 @@ const processChoices = (room) => {
       chronicDrinker.health += 1;
       roundSummary.push(MakeFinishedBeerMsg(chronicDrinker.pId))
     }
-    beerChanges.push({newBeerState: tempBeerState, player: chronicDrinker});
-    }
+    
+
+    console.log(chronicDrinker)
   })
 
   beerChanges.forEach(beerChange => {
