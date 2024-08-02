@@ -1,13 +1,13 @@
 import { startGame, startGameWithCountdown } from "../utils/game.js";
-import { createRoom, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
-import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeJointRoomMsg, MakeLoadGameMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
+import { createRoom, getPublicInLobbyRooms, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
+import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeJointRoomMsg, MakeLoadGameMessage, MakePublicLobbiesMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
 import { areAllPlayersLoaded, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
-export const createRoomService = (ws, name) => {
+export const createRoomService = (ws, name, isPublic = false) => {
   
   const roomCode = makeRandomString(4);
 
-  const joinData = createRoom({ name: name, ws: ws }, roomCode);
+  const joinData = createRoom({ name: name, ws: ws }, roomCode, isPublic);
 
   ws.send(JSON.stringify(MakeCreateRoomMsg(roomCode, joinData.player.pId, ParsePlayersDataForFrontEnd(joinData.room))));
 
@@ -38,7 +38,6 @@ export const joinRoomService = (ws, name, code) => {
 
 export const startGameService = (room) => {
   room.state = "loading"; //TODO: WHEN PLAYER JOINS AFTER 1 ROUND HE DOES NOT GET LOAD MESSAGE
-
   if(areAllPlayersLoaded(room)) startGameWithCountdown(room);
   else sendToAllInRoom(room, JSON.stringify(MakeLoadGameMessage()));
 }
@@ -48,4 +47,8 @@ export const gameLoadedService = (room, player) => {
   player.gameLoaded = true;
 
   if(areAllPlayersLoaded(room)) startGameWithCountdown(room);
+}
+
+export const getPublicInLobbyRoomsService = (ws) => {
+  ws.send(JSON.stringify(MakePublicLobbiesMessage(getPublicInLobbyRooms())));
 }

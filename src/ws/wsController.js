@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, gameLoadedService, joinRoomService, startGameService } from "./wsService.js";
+import { createRoomService, gameLoadedService, getPublicInLobbyRoomsService, joinRoomService, startGameService } from "./wsService.js";
 import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsValidations.js";
 import { removePlayer, rooms } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
@@ -25,7 +25,7 @@ const startWs = () => {
         if(!room){
           switch (data.type){
             case "create-room":
-              const joinData = createRoomService(ws, data.name);
+              const joinData = createRoomService(ws, data.name, data.isPublic ? true : false);
               room = joinData.room;
               player = joinData.player;
               break;
@@ -43,7 +43,10 @@ const startWs = () => {
                 player = joinData.player;
                 break;
               }
-    
+              break;
+            case "get-public-lobbies":
+              getPublicInLobbyRoomsService(ws);
+              break;
             default:
               ws.close();
               break;

@@ -98,6 +98,13 @@ export const MakeGameStartedMessage = () => {
     }
 }
 
+export const MakePublicLobbiesMessage = (lobbies) => {
+    return {
+        type: "public-lobbies",
+        lobbies: lobbies
+    }
+}
+
 // game round related
 
 

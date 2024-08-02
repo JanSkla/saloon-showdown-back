@@ -25,12 +25,18 @@ export const startGame = (room) => {
 
 export const startGameWithCountdown = (room) => {
 
-  sendToAllInRoom(room, JSON.stringify(MakeStartCountdownMessage()));
+  
 
-  setTimeout(() => {
-    sendToAllInRoom(room, JSON.stringify(MakeGameStartedMessage()));
-    startGame(room);
-  }, 4000);
+  setTimeout(() => { //ALERT: temporary solution with fixed game start delay, need to consult with @morek
+
+    sendToAllInRoom(room, JSON.stringify(MakeStartCountdownMessage()));
+  
+    setTimeout(() => {
+      sendToAllInRoom(room, JSON.stringify(MakeGameStartedMessage()));
+      startGame(room);
+    }, 4000);
+
+  }, 1000);
 }
 
 const getOptions = (playerData) => {

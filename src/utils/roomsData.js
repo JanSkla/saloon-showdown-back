@@ -55,12 +55,13 @@ export const removePlayer = (room, player) => {
   sendToAllInRoom(room, JSON.stringify(MakeNewLeaderMsg(room.leadPlayer.pId)));
 }
 
-export const createRoom = (playerData, roomCode) => {
+export const createRoom = (playerData, roomCode, isPublic) => {
 
   const roomIndex = rooms.push({
     roomCode: roomCode,
     players: [],
-    state: "lobby"
+    state: "lobby",
+    public: isPublic
   }) - 1;
 
   addPlayerToRoom(rooms[roomIndex], playerData);
@@ -84,4 +85,15 @@ export const joinPlayerToRoom = (room, playerData) => {
   const playerIndex = addPlayerToRoom(room, playerData) - 1;
 
   return {room: room, player: room.players[playerIndex]};
+}
+
+export const getPublicInLobbyRooms = () => {
+  const publicRooms = rooms.filter(room => room.public && room.state === "lobby");
+  const formatted = publicRooms.map(r => {
+    return {
+      roomCode: r.roomCode,
+      playerCount: r.players.length
+    }
+  });
+  return formatted;
 }
