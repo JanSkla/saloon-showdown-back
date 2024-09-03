@@ -1,7 +1,7 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, gameLoadedService, getPublicInLobbyRoomsService, joinRoomService, startGameService } from "./wsService.js";
+import { createRoomService, gameLoadedService, getPublicInLobbyRoomsService, joinRoomService, readyService, startGameService } from "./wsService.js";
 import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsValidations.js";
-import { removePlayer, rooms } from "../utils/roomsData.js";
+import { removePlayer } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
 
 const wss = new WebSocketServer({port: 8080});
@@ -61,7 +61,7 @@ const startWs = () => {
         } else if (room.state == "lobby" || room.state == "game-over") {
           console.log("has a room")
           switch (data.type){
-            case "start-game":
+            case "start-game": //go to pre game state called by leader only
               if(room.leadPlayer == player){
                 startGameService(room);
               }
@@ -69,7 +69,19 @@ const startWs = () => {
           default:
             ws.close();
             break;
-        }
+          }
+        } else if (room.state == "pre-game") {
+          switch (data.type){
+            case "game-loaded":
+              gameLoadedService(room, player);
+              break;
+            case "ready":
+              readyService(room, player);
+              break;
+          default:
+            ws.close();
+            break;
+          }
         } else if (room.state == "game") {
           
           switch (data.type){
@@ -90,8 +102,6 @@ const startWs = () => {
             ws.close();
             break;
           }
-        } else if (room.state == "loading") {
-          gameLoadedService(room, player);
         }
         else {
           ws.close();

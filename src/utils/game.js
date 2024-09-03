@@ -3,7 +3,6 @@ import { MakeAmmoMsg, MakeBlockMsg, MakeChooseMsg, MakeFinishedBeerMsg, MakeGame
 import { getPlayerByPIdAndRoom, sendToAllInRoom } from "./utils.js";
 
 export const startGame = (room) => {
-  room.state = "game";
 
   room.gameData = {
     playerData: []
@@ -24,8 +23,11 @@ export const startGame = (room) => {
 }
 
 export const startGameWithCountdown = (room) => {
+  room.state = "game";
 
-  
+  room.players.forEach(player => {
+    player.ready = undefined;
+  });
 
   setTimeout(() => { //ALERT: temporary solution with fixed game start delay, need to consult with @morek
 

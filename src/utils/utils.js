@@ -1,5 +1,3 @@
-import { MakePlayersLoadedMessage, ParsePlayersDataForFrontEnd } from "./serverToClientMessages.js";
-
 export const makeRandomString = (length)  => {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -33,16 +31,12 @@ export const getRandomName = () => {
   return names[random];
 }
 
-export const areAllPlayersLoaded = (room) => {
-  let allLoaded = true;
+export const areAllPlayersReady = (room) => {
+  let allReady = true;
 
   room.players.forEach(plr =>{
-    if(plr.gameLoaded === false) allLoaded = false;
+    if(plr.ready !== true) allReady = false;
   });
 
-  console.log("isloaded", allLoaded, allLoaded && JSON.stringify(MakePlayersLoadedMessage(ParsePlayersDataForFrontEnd(room))))
-
-  if(allLoaded) sendToAllInRoom(room, JSON.stringify(MakePlayersLoadedMessage(ParsePlayersDataForFrontEnd(room))));
-
-  return allLoaded;
+  return allReady;
 }

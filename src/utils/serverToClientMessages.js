@@ -78,13 +78,6 @@ export const MakeLoadGameMessage = () => {
     }
 }
 
-export const MakePlayersLoadedMessage = (players) => {
-    return {
-        type: "players-loaded",
-        players: players
-    }
-}
-
 export const MakeStartCountdownMessage = () => {
     return {
         type: "start-countdown",
@@ -104,6 +97,28 @@ export const MakePublicLobbiesMessage = (lobbies) => {
         lobbies: lobbies
     }
 }
+
+export const MakeLoadedDataMessage = (room) => {
+    return {
+        type: "loaded-data",
+        players: ParsePlayersDataForFrontEnd(room)
+    }
+}
+
+export const MakePlayerLoadedMessage = (loadedPID) => {
+    return {
+        type: "player-loaded",
+        player: loadedPID
+    }
+}
+
+export const MakePlayerReadyMessage = (readyPID) => {
+    return {
+        type: "player-ready",
+        player: readyPID
+    }
+}
+
 
 // game round related
 

@@ -1,7 +1,7 @@
-import { startGame, startGameWithCountdown } from "../utils/game.js";
+import { startGameWithCountdown } from "../utils/game.js";
 import { createRoom, getPublicInLobbyRooms, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
-import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeJointRoomMsg, MakeLoadGameMessage, MakePublicLobbiesMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
-import { areAllPlayersLoaded, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
+import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeJointRoomMsg, MakeLoadedDataMessage, MakeLoadGameMessage, MakePlayerLoadedMessage, MakePlayerReadyMessage, MakePublicLobbiesMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
+import { areAllPlayersReady, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = (ws, name, isPublic = false) => {
   
@@ -37,16 +37,29 @@ export const joinRoomService = (ws, name, code) => {
 }
 
 export const startGameService = (room) => {
-  room.state = "loading"; //TODO: WHEN PLAYER JOINS AFTER 1 ROUND HE DOES NOT GET LOAD MESSAGE
-  if(areAllPlayersLoaded(room)) startGameWithCountdown(room);
-  else sendToAllInRoom(room, JSON.stringify(MakeLoadGameMessage()));
+  room.state = "pre-game"; 
+
+  sendToAllInRoom(room, JSON.stringify(MakeLoadGameMessage()));
+}
+
+export const readyService = (room, player) => {
+
+  player.ready = true;
+
+  sendToAllInRoom(room, JSON.stringify(MakePlayerReadyMessage(player.pId)));
+  
+  if(areAllPlayersReady(room)) startGameWithCountdown(room);
 }
 
 export const gameLoadedService = (room, player) => {
 
   player.gameLoaded = true;
 
-  if(areAllPlayersLoaded(room)) startGameWithCountdown(room);
+  sendToAllInRoom(room, JSON.stringify(MakePlayerLoadedMessage(player.pId)));
+
+  player.ws.send(JSON.stringify(MakeLoadedDataMessage(room)));
+
+  //if(areAllPlayersLoaded(room)) startGameWithCountdown(room);
 }
 
 export const getPublicInLobbyRoomsService = (ws) => {
