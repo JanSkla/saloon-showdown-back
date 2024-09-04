@@ -39,7 +39,7 @@ export const joinRoomService = (ws, name, code) => {
 export const startGameService = (room) => {
   room.state = "pre-game"; 
 
-  sendToAllInRoom(room, JSON.stringify(MakeLoadGameMessage()));
+  sendToAllInRoom(room, JSON.stringify(MakeLoadGameMessage(room)));
 }
 
 export const readyService = (room, player) => {

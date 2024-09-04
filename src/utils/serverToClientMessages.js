@@ -72,9 +72,10 @@ export const ParsePlayersDataForFrontEnd = (room) => {
 }
 
 // pre-game related
-export const MakeLoadGameMessage = () => {
+export const MakeLoadGameMessage = (room) => {
     return {
-        type: "load-game"
+        type: "load-game",
+        players: ParsePlayersDataForFrontEnd(room)
     }
 }
 
