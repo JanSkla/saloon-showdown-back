@@ -1,6 +1,6 @@
 import { startGameWithCountdown } from "../utils/game.js";
 import { createRoom, getPublicInLobbyRooms, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
-import { MakeCreateRoomMsg, MakeErrorJointRoomMsg, MakeJointRoomMsg, MakeLoadedDataMessage, MakeLoadGameMessage, MakePlayerLoadedMessage, MakePlayerReadyMessage, MakePublicLobbiesMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
+import { MakeCreateRoomMsg, MakeErrorJoinRoomMsg, MakeJoinRoomMsg, MakeLoadedDataMessage, MakeLoadGameMessage, MakePlayerLoadedMessage, MakePlayerReadyMessage, MakePublicLobbiesMessage, MakeRadioMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
 import { areAllPlayersReady, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = (ws, name, isPublic = false) => {
@@ -21,7 +21,7 @@ export const joinRoomService = (ws, name, code) => {
   console.log(room.state, "roomstate join")
 
   if (room.state != "lobby" && room.state != "game-over"){
-    ws.send(JSON.stringify(MakeErrorJointRoomMsg()));
+    ws.send(JSON.stringify(MakeErrorJoinRoomMsg()));
     ws.close();
     return false;
   }
@@ -29,7 +29,7 @@ export const joinRoomService = (ws, name, code) => {
   const joinData = joinPlayerToRoom(room, { name: name, ws: ws });
 
 
-  const response = !!joinData ? MakeJointRoomMsg( code,  joinData.player.pId, ParsePlayersDataForFrontEnd(room)) : {status: 400};
+  const response = !!joinData ? MakeJoinRoomMsg( code,  joinData.player.pId, joinData.room) : {status: 400};
 
   ws.send(JSON.stringify(response));
 
@@ -64,4 +64,11 @@ export const gameLoadedService = (room, player) => {
 
 export const getPublicInLobbyRoomsService = (ws) => {
   ws.send(JSON.stringify(MakePublicLobbiesMessage(getPublicInLobbyRooms())));
+}
+
+//RADIO
+
+export const radio = (radioState, room) => {
+  room.radio = radioState;
+  sendToAllInRoom(room, JSON.stringify(MakeRadioMessage(radioState)));
 }

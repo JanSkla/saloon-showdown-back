@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { createRoomService, gameLoadedService, getPublicInLobbyRoomsService, joinRoomService, readyService, startGameService } from "./wsService.js";
+import { createRoomService, gameLoadedService, getPublicInLobbyRoomsService, joinRoomService, radio, readyService, startGameService } from "./wsService.js";
 import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsValidations.js";
 import { removePlayer } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
@@ -66,6 +66,12 @@ const startWs = () => {
                 startGameService(room);
               }
               break;
+            case "radio-on":
+              radio(true, room);
+              break;
+            case "radio-off":
+              radio(false, room);
+              break;
           default:
             ws.close();
             break;
@@ -77,6 +83,12 @@ const startWs = () => {
               break;
             case "ready":
               readyService(room, player);
+              break;
+            case "radio-on":
+              radio(true, room);
+              break;
+            case "radio-off":
+              radio(false, room);
               break;
           default:
             ws.close();
@@ -97,6 +109,12 @@ const startWs = () => {
                 ws.close();
                 break;
               }
+              break;
+            case "radio-on":
+              radio(true, room);
+              break;
+            case "radio-off":
+              radio(false, room);
               break;
           default:
             ws.close();

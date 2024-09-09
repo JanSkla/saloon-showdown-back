@@ -10,17 +10,18 @@ export const MakeCreateRoomMsg = (roomCode, pId, players) => {
     }
 }
 
-export const MakeJointRoomMsg = (code, pId, players) => {
+export const MakeJoinRoomMsg = (code, pId, room) => {
     return {
         type: "join-room",
         status: 200,
         code: code,
         pId: pId,
-        players: players
+        players: ParsePlayersDataForFrontEnd(room),
+        radio: room.radio
     }
 }
 
-export const MakeErrorJointRoomMsg = () => {
+export const MakeErrorJoinRoomMsg = () => {
     return {
         type: "join-room",
         status: 400
@@ -119,6 +120,14 @@ export const MakePlayerReadyMessage = (readyPID) => {
         player: readyPID
     }
 }
+
+export const MakeRadioMessage = (radioState) => {
+    return {
+        type: "radio",
+        state: radioState
+    }
+}
+
 
 
 // game round related
