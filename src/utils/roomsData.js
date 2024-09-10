@@ -62,7 +62,7 @@ export const createRoom = (playerData, roomCode, isPublic) => {
     players: [],
     state: "lobby",
     public: isPublic,
-    radio: true
+    radio: false
   }) - 1;
 
   addPlayerToRoom(rooms[roomIndex], playerData);
