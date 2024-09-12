@@ -121,8 +121,8 @@ const processChoices = (room) => {
     if(targetPlayer.choice.type != "block"){
       targetPlayer.health -= 1;
       if (targetPlayer.health < 1){
-        deaths.push(targetPlayer);
         roundSummary.push(MakeShootDeathMsg(userId, targetPlayer.pId));
+        deaths.push(targetPlayer);
       }
       else{
         if(targetPlayer.beer == "ready"){
@@ -147,8 +147,10 @@ const processChoices = (room) => {
     
     const i = room.gameData.playerData.indexOf(LOOSER_hahaha);
 
-    console.log("player " + LOOSER_hahaha.pId + " died");
-    room.gameData.playerData.splice(i, 1);
+    if ( i >= 0){
+      console.log("player " + LOOSER_hahaha.pId + " died");
+      room.gameData.playerData.splice(i, 1);
+    }
   })
 
   beerDrinkers.forEach(chronicDrinker => {
