@@ -258,7 +258,10 @@ export const handlePlayerChoice = (room, player, data) => {
   room.gameData.playerData.filter(data => console.log(data));
 
   if (room.gameData.playerData.filter(data => data.choice.type === undefined).length === 0){
-    gatherEvent(room);
+
+    if(timeoutId !== undefined)
+      gatherEvent(room);
     clearTimeout(timeoutId);
+    timeoutId = undefined;
   }
 }
