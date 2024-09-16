@@ -43,7 +43,9 @@ export const startGameWithCountdown = (room) => {
 
 const getOptions = (playerData) => {
 
-  const options = ["block", "ammo"];
+  const options = ["block"];
+
+  if(playerData.ammo < 6) options.push("ammo");
 
   if(playerData.ammo > 0) options.push("shoot");
 
