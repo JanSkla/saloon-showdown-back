@@ -181,6 +181,8 @@ const processChoices = (room) => {
   return roundSummary;
 }
 
+let timeoutId
+
 const chooseEvent = (room) => {
   if (room.players.length < 1) return;
 
@@ -204,7 +206,7 @@ const chooseEvent = (room) => {
 
   console.log(room.gameData.state)
 
-  setTimeout(() => gatherEvent(room), CHOOSE_TIME);
+  timeoutId = setTimeout(() => gatherEvent(room), CHOOSE_TIME);
 }
 
 const gatherEvent = (room) => {
@@ -253,4 +255,10 @@ export const handlePlayerChoice = (room, player, data) => {
     return;
   }
   playerData.choice = choiceData;
+  room.gameData.playerData.filter(data => console.log(data));
+
+  if (room.gameData.playerData.filter(data => data.choice.type === undefined).length === 0){
+    gatherEvent(room);
+    clearTimeout(timeoutId);
+  }
 }
