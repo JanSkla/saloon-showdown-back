@@ -114,10 +114,11 @@ export const MakePlayerLoadedMessage = (loadedPID) => {
     }
 }
 
-export const MakePlayerReadyMessage = (readyPID) => {
+export const MakePlayerReadyMessage = (readyPID, readycount) => {
     return {
         type: "player-ready",
-        player: readyPID
+        player: readyPID,
+        readycount: readycount
     }
 }
 

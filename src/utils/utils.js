@@ -40,3 +40,13 @@ export const areAllPlayersReady = (room) => {
 
   return allReady;
 }
+
+export const getPlayerReadyCount = (room) => {
+  let readycount = 0;
+
+  room.players.forEach(plr =>{
+    if(plr.ready === true) readycount++;
+  });
+
+  return readycount;
+}

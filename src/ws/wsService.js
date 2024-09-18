@@ -1,7 +1,7 @@
 import { startGameWithCountdown } from "../utils/game.js";
 import { createRoom, getPublicInLobbyRooms, getRoomByCode, joinPlayerToRoom } from "../utils/roomsData.js";
 import { MakeCreateRoomMsg, MakeErrorJoinRoomMsg, MakeJoinRoomMsg, MakeLoadedDataMessage, MakeLoadGameMessage, MakePlayerLoadedMessage, MakePlayerReadyMessage, MakePublicLobbiesMessage, MakeRadioMessage, ParsePlayersDataForFrontEnd } from "../utils/serverToClientMessages.js";
-import { areAllPlayersReady, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
+import { areAllPlayersReady, getPlayerReadyCount, makeRandomString, sendToAllInRoom } from "../utils/utils.js";
 
 export const createRoomService = (ws, name, isPublic = false) => {
   
@@ -22,7 +22,6 @@ export const joinRoomService = (ws, name, code) => {
 
   if (room.state != "lobby" && room.state != "game-over"){
     ws.send(JSON.stringify(MakeErrorJoinRoomMsg()));
-    ws.close();
     return false;
   }
 
@@ -46,7 +45,7 @@ export const readyService = (room, player) => {
 
   player.ready = true;
 
-  sendToAllInRoom(room, JSON.stringify(MakePlayerReadyMessage(player.pId)));
+  sendToAllInRoom(room, JSON.stringify(MakePlayerReadyMessage(player.pId, getPlayerReadyCount(room))));
   
   if(areAllPlayersReady(room)) startGameWithCountdown(room);
 }
