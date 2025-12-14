@@ -123,9 +123,11 @@ export const MakePlayerReadyMessage = (readyPID, readycount) => {
 }
 
 export const MakeRadioMessage = (radioState) => {
+    const songPaths = ["/sounds/title-theme.mp3", "/sounds/soundtrack-2.wav", "/sounds/soundtrack-3.mp3", "/sounds/soundtrack-4.mp3"];
     return {
         type: "radio",
-        state: radioState
+        state: radioState,
+        songPath: radioState ? songPaths[Math.floor(Math.random() * songPaths.length)] : null
     }
 }
 
