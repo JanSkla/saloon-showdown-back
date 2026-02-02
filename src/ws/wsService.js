@@ -18,7 +18,6 @@ export const joinRoomService = (ws, name, code) => {
 
   const room = getRoomByCode(code);
 
-  console.log(room.state, "roomstate join")
 
   if (room.state != "lobby" && room.state != "game-over"){
     ws.send(JSON.stringify(MakeErrorJoinRoomMsg()));

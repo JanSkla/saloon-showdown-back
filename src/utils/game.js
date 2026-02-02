@@ -94,7 +94,8 @@ const processChoices = (room) => {
           case "shoot":
             const targetPlayerData = room.gameData.playerData.find(pData=> pData.pId === data.choice.target);
             if (!targetPlayerData){
-              console.log("target player does not exist");
+              //target player does not exist
+              //todo
               break;
             }
             data.ammo -= 1;
@@ -142,7 +143,6 @@ const processChoices = (room) => {
     }
     else
       roundSummary.push(MakeShootBlockMsg(userId, targetPlayer.pId));
-    console.log(targetPlayer)
   })
 
   deaths.forEach(LOOSER_hahaha => {
@@ -150,7 +150,6 @@ const processChoices = (room) => {
     const i = room.gameData.playerData.indexOf(LOOSER_hahaha);
 
     if ( i >= 0){
-      console.log("player " + LOOSER_hahaha.pId + " died");
       room.gameData.playerData.splice(i, 1);
     }
   })
@@ -171,7 +170,6 @@ const processChoices = (room) => {
     }
     
 
-    console.log(chronicDrinker)
   })
 
   beerChanges.forEach(beerChange => {
@@ -193,7 +191,6 @@ const chooseEvent = (room) => {
     const player = getPlayerByPIdAndRoom(room, playerData.pId);
 
     if (!player){
-      console.log("playerDoesNotExist")
       return;
     }
 
@@ -204,14 +201,12 @@ const chooseEvent = (room) => {
     player.ws.send(JSON.stringify(MakeChooseMsg(playerData.options)));
   })
 
-  console.log(room.gameData.state)
 
   timeoutId = setTimeout(() => gatherEvent(room), CHOOSE_TIME);
 }
 
 const gatherEvent = (room) => {
   room.gameData.state = "gathering"; //gathering tells clients that they should not call any more choose calls, it's a delay for previous ones to finish
-  console.log(room.gameData.state)
 
   sendToAllInRoom(room, JSON.stringify(MakeStopChoiceMsg()));
 
@@ -221,8 +216,7 @@ const gatherEvent = (room) => {
 const processEvent = (room) => {
   room.gameData.state = "processing";
 
-  console.log(room.gameData.state)
-  console.log(room.gameData.playerData)
+
   
   sendToAllInRoom(room, JSON.stringify(MakeProcessingMsg()));
 
@@ -231,13 +225,11 @@ const processEvent = (room) => {
   sendToAllInRoom(room, JSON.stringify(MakeRoundActionsMsg(roundSummary)));
 
   if (room.gameData.playerData.length <= 1){
-    console.log("game is over")
     const winner = room.gameData.playerData[0];
     room.state = "game-over";
 
     sendToAllInRoom(room, JSON.stringify(MakeGameOverMsg(winner && winner.pId)));
     
-    console.log(room)
     return;
   }
 
@@ -251,7 +243,6 @@ export const handlePlayerChoice = (room, player, data) => {
 
   const playerData = room.gameData.playerData.find(data => data.pId == player.pId)
   if(!playerData){
-    console.log("playerData was not found");
     return;
   }
   playerData.choice = choiceData;

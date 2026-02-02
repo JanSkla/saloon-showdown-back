@@ -4,7 +4,7 @@ import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsV
 import { removePlayer } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
 
-const wss = new WebSocketServer({port: 8080});
+const wss = new WebSocketServer({server});
 
 const startWs = () => {
   wss.on('connection', function connection(ws) {
@@ -16,7 +16,6 @@ const startWs = () => {
 
       // one big try catch to make server not crash...
       try {
-        console.log("recieved:" + data)
 
         data = JSON.parse(data);
 
@@ -35,7 +34,6 @@ const startWs = () => {
                 const joinData = joinRoomService(ws, data.name, data.code);
 
                 if (!joinData){
-                  console.log("bad join code attempt");
                   return;
                 }
 
@@ -52,14 +50,12 @@ const startWs = () => {
               break;
           }
           ws.on('close', () => {
-            console.log('closed');
             if(room && player){
               removePlayer(room, player);
             }
           });
 
         } else if (room.state == "lobby" || room.state == "game-over") {
-          console.log("has a room")
           switch (data.type){
             case "start-game": //go to pre game state called by leader only
               if(room.leadPlayer == player){
@@ -125,7 +121,6 @@ const startWs = () => {
           ws.close();
         }
       } catch (e) {
-        console.log(e)
         ws.close();
         return false;
       }

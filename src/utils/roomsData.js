@@ -12,7 +12,6 @@ const getNewPlayerId = () => {
 const addPlayerToRoom = (room, playerData) => {
   playerData.pId = getNewPlayerId();
   playerData.gameLoaded = false;
-  console.log(playerData.pId)
 
   if (!playerData.name)
     playerData.name = getRandomName() + playerData.pId;
@@ -24,7 +23,6 @@ const addPlayerToRoom = (room, playerData) => {
 
 export const removeRoom = (index) => {
   rooms.splice(index, 1);
-  console.log("removed room, rooms:", rooms);
 }
 
 export const removePlayer = (room, player) => {
@@ -42,15 +40,11 @@ export const removePlayer = (room, player) => {
 
   if(room.gameData){
     const deletePlayerDataIndex = room.gameData.playerData.findIndex(data => data.pId == player.pId);
-    console.log(deletePlayerDataIndex, "deletePlayerDataIndex")
     if(deletePlayerDataIndex >= 0) room.gameData.playerData.splice(deletePlayerDataIndex, 1);
   }
 
   room.leadPlayer = room.players[0];
 
-  console.log("players:", room.players.map(plr => plr.pId))
-  console.log("player " + pId + " disconnected");
-  console.log("player " + room.leadPlayer.pId + " is now room leader");
   sendToAllInRoom(room, JSON.stringify(MakePlayerDisconnectMsg(pId)));
   sendToAllInRoom(room, JSON.stringify(MakeNewLeaderMsg(room.leadPlayer.pId)));
 }
