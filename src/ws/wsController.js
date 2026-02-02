@@ -4,9 +4,10 @@ import { chooseCardValidateData, joinRoomValidateData } from "../validations/wsV
 import { removePlayer } from "../utils/roomsData.js";
 import { handlePlayerChoice } from "../utils/game.js";
 
-const wss = new WebSocketServer({server});
+const startWs = (server) => {
+  const wss = new WebSocketServer({server});
 
-const startWs = () => {
+
   wss.on('connection', function connection(ws) {
     
     let room;
